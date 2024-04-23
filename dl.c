@@ -12,6 +12,9 @@
 #include <arpa/inet.h>
 
 #include <string.h>
+#include <time.h> 
+
+#define MAX_LENGTH 256
 
 
 int ReadHttpStatus(int sock){
@@ -65,10 +68,10 @@ int ParseHeader(int sock){
 
     if(bytes_received){
         ptr=strstr(ptr,"Content-Length:");
-        if(ptr){
+        if(ptr) {
             sscanf(ptr,"%*s %d",&bytes_received);
 
-        }else
+        } else
             bytes_received=-1; //unknown size
 
        printf("Content-Length: %d\n",bytes_received);
@@ -78,9 +81,31 @@ int ParseHeader(int sock){
 
 }
 
-int main(void){
+void printHelp(char *binName) {
+    printf("Usage: %s <IP> <port> <PathToFile> <destFile>\n", binName);
+    printf("The destination file can be skipped, so that we just store the file in memory measuring the download time.\n");
+    printf("Also remember to run \"python3 -m http.server\" in the folder you want to create the file server!\n");
 
-    char domain[] = "0.0.0.0", path[]="/file_example_AVI_480_750kB.avi"; 
+}
+
+int main(int argc, char **argv) {
+    char domain[MAX_LENGTH];
+    int port;
+    char path[MAX_LENGTH];
+    char dest_file[MAX_LENGTH];
+    if (argc >= 4) {
+        snprintf(domain, strlen(argv[1]) + 1, "%s", argv[1]);
+        port = atoi(argv[2]);
+        snprintf(path, strlen(argv[3]) + 1, "%s", argv[3]);
+        printf("Using http://%s:%d/%s as file path.\n", domain, port, path);
+        if (argc > 4) {
+            snprintf(dest_file, strlen(argv[4]) + 1, "%s", argv[4]);
+            printf("Using %s as target file.\n", dest_file);
+        }
+    } else {
+        printHelp(argv[0]);
+        return 0;
+    }
 
     int sock, bytes_received;  
     char send_data[1024],recv_data[1024], *p;
@@ -99,7 +124,7 @@ int main(void){
        exit(1);
     }
     server_addr.sin_family = AF_INET;     
-    server_addr.sin_port = htons(8080);
+    server_addr.sin_port = htons(port);
     server_addr.sin_addr = *((struct in_addr *)he->h_addr);
     bzero(&(server_addr.sin_zero),8); 
 
@@ -119,31 +144,42 @@ int main(void){
     }
     printf("Data sent.\n");  
 
-    //fp=fopen("received_file","wb");
-    printf("Recieving data...\n\n");
+    printf("Receiving data...\n\n");
 
-    int contentlengh;
+    int contentLength;
 
-    if(ReadHttpStatus(sock) && (contentlengh=ParseHeader(sock))){
+    if (ReadHttpStatus(sock) && (contentLength=ParseHeader(sock))) { //CAMBIAR PARA DESCARGAR ARCHIVO Sí O SÍ SIN GUARDARLO SIEMPRE
+        int bytes = 0;
+        FILE* fd;
+        clock_t t;
+        if (argc > 4) {
+            fd = fopen(dest_file, "wb");
+            printf("Saving data to %s file...\n\n", dest_file);
+        } else {
+            printf("Downloading file to memory without storing it...\n");
+        }
 
-        int bytes=0;
-        FILE* fd=fopen("test.png","wb");
-        printf("Saving data...\n\n");
-
-        while(bytes_received = recv(sock, recv_data, 1024, 0)){
-            if(bytes_received==-1){
+        t = clock(); // Start time
+        while (bytes_received = recv(sock, recv_data, 1024, 0)) {
+            if (bytes_received==-1) {
                 perror("receive");
                 exit(3);
             }
 
-
-            fwrite(recv_data,1,bytes_received,fd);
-            bytes+=bytes_received;
-            printf("Bytes received: %d from %d\n",bytes,contentlengh);
-            if(bytes==contentlengh)
-            break;
+            if (argc > 4)
+                fwrite(recv_data, 1, bytes_received, fd);
+            bytes += bytes_received;
+            printf("Bytes received: %d from %d (%.2f %%)\n", bytes, contentLength, ((float) bytes)/contentLength * 100);
+            if (bytes == contentLength)
+                break;
         }
-        fclose(fd);
+        t = clock() - t; // Final time
+        // Convert time to seconds
+        double time_taken = ((double) t)/CLOCKS_PER_SEC; // in seconds
+        printf("Downloaded file of %d bytes (%.2f MiBs) in %f seconds (%.2f Bps or %.2f MiBps)\n", contentLength, ((float) contentLength)/(1024 * 1024), time_taken, ((float) contentLength)/time_taken, ((float) contentLength)/(time_taken * 1024 * 1024));
+
+        if (argc > 4)
+            fclose(fd);
     }
 
 
