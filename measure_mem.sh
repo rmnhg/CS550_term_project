@@ -8,29 +8,25 @@ make
 rm -rf logs
 mkdir logs
 
-# Create an array of the different file sizes:
+# Create an array of the different memory variable sizes:
 declare -a sizes=("16" "32" "64" "128" "256")
 
-# Remove old file if existent
-rm testFile
-
 for size in "${sizes[@]}"; do
-    echo "Working with a file size of ${size} MiB..."
+    echo "Working with a memory variable size of ${size} MiB..."
     echo ""
     echo "Measuring time of a normal execution for ${size} MiB."
-    $(pwd)/normDisk ${size} normal > logs/disk_normal_${size}.txt
-    rm testFile
+    $(pwd)/normMem ${size} normal > logs/mem_normal_${size}.txt
 
     echo ""
 
     echo "Measuring time of a virtines execution for ${size} MiB."
-    $(pwd)/virtDisk ${size} virtines > logs/disk_virtines_${size}.txt
-    rm testFile
+    $(pwd)/virtMem ${size} virtines > logs/mem_virtines_${size}.txt
     echo ""
     echo ""
 done
 
 echo "Generating figures..."
-python3 $(pwd)/cleanDataDisk.py
+python3 $(pwd)/cleanDataMem.py
+
 
 echo "All the experiments have been completed!"

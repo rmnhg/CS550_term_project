@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  web:
+    image: python:latest
+    #build: .
+    command: runAll.sh
+    volumes:
+      - ./docker_files/:/scripts
+      - ./normDisk:/scripts/normDisk
+      - ./normMem:/scripts/normMem
+      - ./normNet:/scripts/normNet
+      - ./createFile:/scripts/createFile
+    entrypoint: [ "/scripts/runAll.sh"]

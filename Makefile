@@ -2,19 +2,28 @@ CC=gcc
 VCC=vcc
 
 all:
-	make normal virtines normalNet virtinesNet
+	make normalDisk virtinesDisk normalNet virtinesNet normalMem virtinesMem createFile
 
-normal:
-	$(CC) -o norm disk_speed.c
+normalDisk:
+	$(CC) -o normDisk disk_speed.c
 
-virtines:
-	$(VCC) -o virt disk_speed.c
+virtinesDisk:
+	$(VCC) -o virtDisk disk_speed.c
 
 normalNet:
-	$(CC) -o normDL dl.c
+	$(CC) -o normNet network_speed.c
 
 virtinesNet:
-	$(VCC) -o virtDL dl.c
+	$(VCC) -o virtNet network_speed.c
+
+normalMem:
+	$(CC) -o normMem memory_speed.c
+
+virtinesMem:
+	$(VCC) -o virtMem memory_speed.c
+
+createFile:
+	$(CC) -o createFile createFile.c
 
 clean:
-	rm -rf norm virt normDL virtDL testFile logs
+	rm -rf normdisk virtDisk normNet virtNet normMem virtMem testFile createFile assets logs docker_files/assets docker_files/logs *.png
