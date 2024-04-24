@@ -18,7 +18,7 @@ done
 echo "Starting the file server"
 cd /scripts/assets
 python3 -m http.server 8080 &
-sleep 1
+sleep 2
 cd ..
 
 echo ""
