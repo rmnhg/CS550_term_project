@@ -20,7 +20,8 @@ print("Processing logs...")
 values = []
 for stdout in [stdout1, stdout2]:
     for line in stdout.decode().split('\n'):
-        if "sec" in line:
+        if "MiB/sec" in line:
+            print(line)
             seconds = float(cut_str(line, " in ", " seconds"))
             env = cut_str(line, ") in ", " env!")
             speed = float(cut_str(line, "seconds (", " MiB/sec)"))
@@ -67,7 +68,7 @@ for type in ['read', 'write']:
     plt.plot(file_sizes, write_speed_docker if type == "write" else read_speed_docker, marker='o', label='Docker environment')
     plt.xlabel("File size (MiB)")
     plt.ylabel("Read Speed" if type == "read" else "Write Speed")
-    plt.title("Speed vs File size")
+    plt.title(("Disk Read Speed" if type == "read" else "Disk Write Speed")+" vs File size")
     plt.legend()
     plt.grid(True)
     path = "disk_read_speeds.png" if type == "read" else "disk_write_speeds.png"

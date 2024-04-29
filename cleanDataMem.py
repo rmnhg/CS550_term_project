@@ -67,7 +67,7 @@ for type in ['read', 'write']:
     plt.plot(memory_var_sizes, write_speed_docker if type == "write" else read_speed_docker, marker='o', label='Docker environment')
     plt.xlabel("Memory variable size (MiB)")
     plt.ylabel("Read Speed" if type == "read" else "Write Speed")
-    plt.title("Speed vs File size")
+    plt.title(("Memory Read Speed" if type == "read" else "Memory Write Speed")+" vs Memory variable size")
     plt.legend()
     plt.grid(True)
     path = "mem_read_speeds.png" if type == "read" else "mem_write_speeds.png"

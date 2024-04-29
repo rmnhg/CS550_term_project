@@ -3,8 +3,7 @@
 sudo make clean
 make
 
-docker compose up -d
-sleep 3
+docker compose up
 
 ./measure_disk.sh
 ./measure_mem.sh

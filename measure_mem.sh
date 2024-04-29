@@ -12,7 +12,7 @@ mkdir logs
 declare -a sizes=("16" "32" "64" "128" "256")
 
 for size in "${sizes[@]}"; do
-    echo "Working with a memory variable size of ${size} MiB..."
+    echo "Working with a memory variable size of ${size} MiB for memory speed..."
     echo ""
     echo "Measuring time of a normal execution for ${size} MiB."
     $(pwd)/normMem ${size} normal > logs/mem_normal_${size}.txt
@@ -29,4 +29,4 @@ echo "Generating figures..."
 python3 $(pwd)/cleanDataMem.py
 
 
-echo "All the experiments have been completed!"
+echo "All the memory experiments have been completed!"

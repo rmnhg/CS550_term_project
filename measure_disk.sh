@@ -15,7 +15,7 @@ declare -a sizes=("16" "32" "64" "128" "256")
 rm testFile
 
 for size in "${sizes[@]}"; do
-    echo "Working with a file size of ${size} MiB..."
+    echo "Working with a file size of ${size} MiB for disk speed..."
     echo ""
     echo "Measuring time of a normal execution for ${size} MiB."
     $(pwd)/normDisk ${size} normal > logs/disk_normal_${size}.txt
@@ -33,4 +33,4 @@ done
 echo "Generating figures..."
 python3 $(pwd)/cleanDataDisk.py
 
-echo "All the experiments have been completed!"
+echo "All the disk experiments have been completed!"

@@ -10,5 +10,6 @@ services:
       - ./normDisk:/scripts/normDisk
       - ./normMem:/scripts/normMem
       - ./normNet:/scripts/normNet
+      - ./measure_network.py:/scripts/measure_network.py
       - ./createFile:/scripts/createFile
     entrypoint: [ "/scripts/runAll.sh"]

@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+int ATTEMPTS = 10;
+
 void createTestFile(int size) {
     FILE *fptr;
 
@@ -54,20 +56,26 @@ int main(int argc, char** argv) {
     int size = size_MiB * 1024 * 1024; // Convert to MiB
 
     // Create file
+    double time_taken = 0;
     printf("Creating a file of %d MiB (%d bytes) from %s env...\n", size_MiB, size, argv[2]);
-    t = clock(); // Start time
-    createTestFile(size);
-    t = clock() - t; // Final time
-    // Convert time to seconds
-    double time_taken = ((double) t)/CLOCKS_PER_SEC; // in seconds
+    for (int i = 0; i < ATTEMPTS; i++) {
+        t = clock(); // Start time
+        createTestFile(size);
+        t = clock() - t; // Final time
+        // Convert time to seconds and save as average
+        time_taken += (((double) t)/CLOCKS_PER_SEC)/ATTEMPTS; // in seconds
+    }
     printf("A file of %d MiB has been succesfully written in %f seconds (%f MiB/sec) in %s env!\n", size_MiB, time_taken, size_MiB/time_taken, argv[2]);
 
     // Read file
+    time_taken = 0;
     printf("Reading the created file of %d MiB (%d bytes) from %s env...\n", size_MiB, size, argv[2]);
-    t = clock(); // Start time
-    readTestFile(size);
-    t = clock() - t; // Final time
-    // Convert time to seconds
-    time_taken = ((double) t)/CLOCKS_PER_SEC; // in seconds
+    for (int i = 0; i < ATTEMPTS; i++) {
+        t = clock(); // Start time
+        readTestFile(size);
+        t = clock() - t; // Final time
+        // Convert time to seconds and save as average
+        time_taken += (((double) t)/CLOCKS_PER_SEC)/ATTEMPTS; // in seconds
+    }
     printf("The file of %d MiB has been succesfully read in %f seconds (%f MiB/sec) in %s env!\n", size_MiB, time_taken, size_MiB/time_taken, argv[2]);
 }
